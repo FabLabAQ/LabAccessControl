@@ -1,3 +1,8 @@
+/*  Card Maker Firmware
+ *   
+ */
+
+
 #include "Arduino.h"
 #include "secret_keys.h"
 #include <MFRC522.h>
@@ -37,6 +42,12 @@ void wait_for_new_card(MFRC522::Uid old_uid) {
 	}
 }
 
+void printUID() {
+  char uid_char[5];
+  hex_to_char(RFID.uid.uidByte, RFID.uid.size, uid_char);
+  Keyboard.print(uid_char);
+}
+
 void loop()
 {
 	wait_for_new_card(RFID.uid);
@@ -44,24 +55,26 @@ void loop()
 		if (RFID.MIFARE_Write(3, (byte*)&new_sector_0_trailer, 16)  == MFRC522::STATUS_OK) {
 			if (RFID.MIFARE_Write(2, new_block_2, 16)  == MFRC522::STATUS_OK) {
 				if (RFID.MIFARE_Write(1, new_block_1, 16)  == MFRC522::STATUS_OK) {
-					char uid_char[5];
-					hex_to_char(RFID.uid.uidByte, RFID.uid.size, uid_char);
-					Keyboard.print(uid_char);
+					printUID();
 				}
 				else {
-					Keyboard.print(F("step 4 of 4: failed to write block 1"));
+					Keyboard.print(F("Error, step 4 of 4: failed to write block 1; UID: "));
+          printUID();
 				}
 			}
 			else {
-				Keyboard.print(F("step 3 of 4: failed to write block 2"));
+				Keyboard.print(F("Error, step 3 of 4: failed to write block 2; UID: "));
+        printUID();
 			}
 		}
 		else {
-			Keyboard.print(F("step 2 of 4: failed to write block 3 (sector 0 trailer)"));
+			Keyboard.print(F("Error, step 2 of 4: failed to write block 3 (sector 0 trailer); UID: "));
+      printUID();
 		}
 	}
 	else {
-		Keyboard.print(F("step 1 of 4: failed to authenticate using default key"));
+		Keyboard.print(F("Error, step 1 of 4: failed to authenticate using default key; UID: "));
+    printUID();
 	}
 	RFID.PICC_HaltA();
 	RFID.PCD_StopCrypto1();

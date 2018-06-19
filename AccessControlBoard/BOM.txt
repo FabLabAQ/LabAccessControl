@@ -1,0 +1,18 @@
+1x ESP-12 module
+1x HLK-PM03 power supply
+1x SRD-03VDC-SL-C relay
+3x 0805 22uF 25V ceramic capacitors
+2x 0603 100nF 50V ceramic capacitors
+1x 07D391K 7mm 250Vrms varistor
+1x X2 100nF 10mm pitch capacitor
+1x 10mH 8x10mm inductor
+1x 125mA 250V axial fuse
+1x 1N4001 DO-214AC diode
+1x AO3400 SOT23-3 N-MOSFET
+1x 0603 2ohm resistor
+1x 0603 3.3k resistor
+4x 0603 10k resistors
+1x 8p 2.54mm header
+1x 6p 2.54mm header
+1x 3p 5.08mm screw terminal
+1x vertical button OR 3.5mm 2p screw terminal

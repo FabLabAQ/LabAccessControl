@@ -2,7 +2,7 @@
  * Card_DB.h
  *
  *  Created on: 21 giu 2018
- *      Author: luca
+ *      Author: Luca Anastasio
  */
 
 #ifndef CARD_DB_H_
@@ -12,146 +12,154 @@
 #include <MFRC522.h>
 #include <Arduino.h>
 #include "hex_utils.h"
+#include "secret_keys.h"
+#include "string.h"
+#include "Debug.h"
+#include "logging.h"
 
-//                                             Helper functions
-//----------------------------------------------------------------------------------------------------------
+PGM_STR accessScriptURL[] = "/macros/s/" SECRET_ACCESS_SCRIPT_ID "/exec?getUIDlist";
+// start and stop sequences with the same 8 char length as UIDs
+PGM_STR UIDstartSequence[] = "UID_START";
+PGM_STR UIDstopSequence[] =  "UID__STOP";
 
-// MFRC522::Uid specialization
-
-inline void uidToPath(char* path, const MFRC522::Uid UID) {
-	hex_to_char(UID.uidByte, 4, path+1);
+void reconnect() {
+	if (!redirect.connected()) {
+		DPRINT("Connecting to script_server_host, result: ");
+		bool connected = redirect.connect(script_server_host, 443);
+		if (connected) LOG(SERVER_RECONNECTION_TEXT);
+		DPRINTLN(connected);
+	}
 }
 
-inline void pathToUID(MFRC522::Uid UID, const char* path) {
-	char_to_hex(path+1, 4, UID.uidByte);
-	UID.size = 4;
-}
-
-inline bool compare(const MFRC522::Uid UID1, const MFRC522::Uid UID2) {
-	// check only first 4 bytes
-	return ( *((uint32_t*)UID1.uidByte) == *((uint32_t*)UID2.uidByte));
-}
-
-// char* specialization
-
-inline void uidToPath(char* path, const char* UID) {
-	strcpy(path+1, UID);
-}
-
-inline void pathToUID(char* UID, const char* path) {
-	strcpy(UID, path+1);
-}
-
-inline bool compare(const char* UID1, const char* UID2) {
-	return (strcmp(UID1, UID2) == 0);
-}
-
-// uint8_t* specialization
-
-inline void uidToPath(char* path, const uint8_t* UID) {
+bool cardExistsInDB(const byte* UID) {
+	// 1 char for "/", 8 chars for uid string, 1 terminating char
+	char path[10] = "/";
+	// append uid in characters to the path
 	hex_to_char(UID, 4, path+1);
-}
-
-inline void pathToUID(uint8_t* UID, const char* path) {
-	char_to_hex(path+1, 4, UID);
-}
-
-inline bool compare(const uint8_t* UID1, const uint8_t* UID2) {
-	// check only first 4 bytes
-	return ( *((uint32_t*)UID1) == *((uint32_t*)UID2));
-}
-
-// TODO: check endianness
-
-// uint32_t specialization
-
-inline void uidToPath(char* path, const uint32_t UID) {
-	hex_to_char((uint8_t*)&UID, 4, path+1);
-}
-
-inline void pathToUID(uint32_t UID, const char* path) {
-	char_to_hex(path+1, 4, (uint8_t*)&UID);
-}
-
-inline bool compare(uint32_t UID1, uint32_t UID2) {
-	return (UID1 == UID2);
-}
-
-// uint32_t* specialization
-
-inline void uidToPath(char* path, const uint32_t* UID) {
-	hex_to_char((uint8_t*)UID, 4, path+1);
-}
-
-inline void pathToUID(uint32_t* UID, const char* path) {
-	char_to_hex(path+1, 4, (uint8_t*)UID);
-}
-
-inline bool compare(uint32_t* UID1, uint32_t* UID2) {
-	return (*UID1 == *UID2);
-}
-
-//-----------------------------------------------------------------------------------------------------------------
-
-
-template<typename T> bool fileNameMatch(const char* fileName, const T UID) {
-	// 1 char for "/", 8 chars for uid string, 1 terminating char
-	char path[10] = "/";
-	// append uid in characters to the path
-	uidToPath(path, UID);
-	// check if name matches
-	return strcmp(fileName, path) == 0;
-}
-
-template<typename T> bool cardExistsInDB(const T UID) {
-	// 1 char for "/", 8 chars for uid string, 1 terminating char
-	char path[10] = "/";
-	// append uid in characters to the path
-	uidToPath(path, UID);
 	// check if card exists
 	return SPIFFS.exists(path);
 }
 
-template<typename T> void addCardToDB(const T UID) {
-	// 1 char for "/", 8 chars for uid string, 1 terminating char
-	char path[10] = "/";
-	// append uid in characters to the path
-	uidToPath(path, UID);
-	// create new file and then close it
-	SPIFFS.open(path, "w").close();
-}
+//#define REVERSE_DB_SEARCH
 
-template<typename T> void updateDB(T* UIDarray) {
-	// first delete removed cards from DB
-	Dir dir = SPIFFS.openDir("/");
-	// TODO: check if removing files while iterating can cause problems
-	// e.g. removing the current file makes a jump to the next
-	// if so, place bool found in a nested loop to jump an iteration of next
-	while (dir.next()) {
-		T UID;
-		pathToUID(UID, dir.fileName().c_str());
-		uint16_t i = 0;
-		bool found = false;
-		// iterate over the new UID list received
-		while(UIDarray[i] && !found) {
-			found = compare(UIDarray[i], UID);
-			i++;
-		}
-		// if the card in DB is not present in the new UID list remove it
-		if (!found) {
-			SPIFFS.remove(dir.fileName());
-		}
-	}
+#ifdef REVERSE_DB_SEARCH
+void updateDB() {
+	if (redirect.connected()) {
+		redirect.GET(accessScriptURL, script_server_host);
+		String stringUID = redirect.getResponseBody();
+		// check if we got a valid UID string
+		if(stringUID.startsWith(UIDstartSequence) && stringUID.endsWith(UIDstopSequence)) {
+			// ok, so remove the stop sequence (last 8 chars)
+			stringUID.remove(stringUID.length()-8);
+			//---------- First remove UIDs not in the string from the DB ----------
+			// TODO: check if removing files while iterating can cause problems
+			// e.g. removing the current file makes a jump to the next
+			// if so, place bool found in a nested loop to jump an iteration of next
+			// TODO: check if removing a file alterates file order, if so restart
 
-	// add new cards found in the UID list
-	uint16_t i = 0;
-	// iterate over the new UID list received
-	while(UIDarray[i]) {
-		if (!cardExistsInDB(UIDarray[i])) {
-			addCardToDB(UIDarray[i]);
+			// open directory to iterate over files
+			Dir dir = SPIFFS.openDir("/");
+			while (dir.next()) {
+				// this loop can take some time
+				yield();
+				// get the current file name
+				String fileName = dir.fileName();
+				String substring;
+				int i = stringUID.length() -8;
+				bool found = false;
+				// iterate over the new UID list received
+
+				do {
+					// get the last UID in the string
+					substring = stringUID.substring(i,8);
+					i-=8;
+					// if the card in DB is not present in the new UID list remove it
+					if (substring == fileName) {
+						found = true;
+						stringUID.remove(i,8);
+					}
+				} while (!(substring.equals(UIDstartSequence) || found));
+				// if the UID has not been found in the string, then remove it
+				if (!found) {
+					SPIFFS.remove(fileName);
+				}
+			}
+			// --- Now add the new UIDs to the DB
+			// loop until the other end sequence is reached
+			while(!stringUID.endsWith(UIDstartSequence)) {
+				// this loop can take some time
+				yield();
+				// create new file and then close it to save, name it with the last UID in the string
+				SPIFFS.open(stringUID.substring(stringUID.length()-8), "w").close();
+				// remove the UID from the end of the string
+				stringUID.remove(stringUID.length()-8);
+			}
+			stringUID.remove(0);
 		}
-		i++;
+		LOG(DB_UPDATED_TEXT);
+		DPRINTLN("DB updated");
 	}
 }
+#else
+void updateDB() {
+	// if connection is alive
+	if (redirect.connected()) {
+		// get data form spreadsheet
+		redirect.GET(accessScriptURL, script_server_host);
+		String stringUID = redirect.getResponseBody();
+		// check if we got a valid UID string
+		if(stringUID.startsWith(UIDstartSequence) && stringUID.endsWith(UIDstopSequence)) {
+			// ok, so remove the stop sequence (last 8 chars)
+			stringUID.remove(0,8);
+			//---------- First remove UIDs not in the string from the DB ----------
+			// TODO: check if removing files while iterating can cause problems
+			// e.g. removing the current file makes a jump to the next
+			// if so, place bool found in a nested loop to jump an iteration of next
+			// TODO: check if removing a file alterates file order, if so restart
+
+			// open directory to iterate over files
+			Dir dir = SPIFFS.openDir("/");
+			while (dir.next()) {
+				// this loop can take some time
+				yield();
+				// get the current file name
+				String fileName = dir.fileName();
+				String substring;
+				int i = 0;
+				bool found = false;
+				// iterate over the new UID list received
+
+				do {
+					// get the last UID in the string
+					substring = stringUID.substring(i,8);
+					i+=8;
+					// if the card in DB is not present in the new UID list remove it
+					if (substring == fileName) {
+						found = true;
+						stringUID.remove(i,8);
+					}
+				} while (!(substring.equals(UIDstopSequence) || found));
+				// if the UID has not been found in the string, then remove it
+				if (!found) {
+					SPIFFS.remove(fileName);
+				}
+			}
+			// --- Now add the new UIDs to the DB
+			// loop until the other end sequence is reached
+			while(!stringUID.startsWith(UIDstopSequence)) {
+				// this loop can take some time
+				yield();
+				// create new file and then close it to save, name it with the last UID in the string
+				SPIFFS.open(stringUID.substring(0,8), "w").close();
+				// remove the UID from the end of the string
+				stringUID.remove(0,8);
+			}
+			stringUID.remove(0);
+		}
+		LOG(DB_UPDATED_TEXT);
+		DPRINTLN("DB updated");
+	}
+}
+#endif
 
 #endif /* CARD_DB_H_ */

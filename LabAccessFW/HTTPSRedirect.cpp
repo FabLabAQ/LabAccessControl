@@ -8,7 +8,7 @@
  */
 
 #include "HTTPSRedirect.h"
-#include "DebugMacros.h"
+#include "Debug.h"
 
 HTTPSRedirect::HTTPSRedirect(void) : _httpsPort(443){
   Init();

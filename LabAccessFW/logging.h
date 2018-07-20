@@ -14,18 +14,17 @@
 #include "time.h"
 #include "user_interface.h"
 #include <queue>
+#include <ArduinoJson.h>
 
-PGM_STR logScriptURL[] = "/macros/s/" SECRET_LOG_SCRIPT_ID "/exec?getUIDlist";
-
-#define LOG_START_SEQUENCE "LOG_ID"
-#define LOG_UID_IDENTIFIER "UID"
-#define LOG_TIME_IDENTIFIER "TIME"
-#define LOG_MESSAGE_IDENTIFIER "MSG"
+#define LOG_BOARD_IDENTIFIER "log_id"
+#define LOG_UID_IDENTIFIER "uid"
+#define LOG_TIME_IDENTIFIER "time"
+#define LOG_MESSAGE_IDENTIFIER "msg"
 
 enum logging_status_code {LOG_MEMORY_FULL, LOG_SENT, LOG_APPENDED, LOG_NOT_SENT, LOG_QUEUE_EMPTY};
 
 struct log_queue_t {
-	char text;
+	uint8 text;
 	uint32 UID;
 	time_t time;
 };
@@ -33,28 +32,31 @@ struct log_queue_t {
 std::queue<log_queue_t> log_queue;
 
 void logToSheet(log_queue_t* log) {
-	// allocate message string
-	char payload[40] = LOG_START_SEQUENCE;
-	// append board ID
-	payload[strlen(payload)] = BOARD_ID;
-	// append time in seconds
-	strcat(payload, LOG_TIME_IDENTIFIER);
-	itoa(log->time, payload+strlen(payload), 10);
-	// append message
-	strcat(payload, LOG_MESSAGE_IDENTIFIER);
-	payload[strlen(payload)+1] = log->text;
-	// if UID is not 0
+	// allocate static json buffer
+	StaticJsonBuffer<JSON_OBJECT_SIZE(4)> logJsonBuffer();
+	// new json object
+	JsonObject& logJson = logJsonBuffer.createObject();
+	// add board id
+	logJson[LOG_BOARD_IDENTIFIER] = BOARD_ID;
+	// add timestamp
+	logJson[LOG_TIME_IDENTIFIER] = log->time;
+	// add message
+	logJson[LOG_MESSAGE_IDENTIFIER] = log->text;
+	// add uid
 	if (log->UID) {
-		// append it to the message
-		strcat(payload, LOG_UID_IDENTIFIER);
-		hex_to_char((byte*)&log->UID, 4, payload+strlen(payload));
+		char UIDchar[9] = "";
+		hex_to_char((byte*)&log->UID, 4, UIDchar);
+		logJson[LOG_UID_IDENTIFIER] = UIDchar;
 	}
 	// send to sheet
-	redirect.POST(logScriptURL, script_server_host, payload);
+	redirect.setContentTypeHeader("application/json");
+	String payload;
+	logJson.printTo(payload);
+	redirect.POST(String(scriptURL)+"log", script_server_host, payload);
 	DPRINTLN(payload);
 }
 
-int LOG(const char text = 0, const byte* UID = nullptr) {
+int log(const char text = 0, const byte* UID = nullptr) {
 	log_queue_t last_log;
 	// check if it's a message or we are making a call to dequeue the logs
 	if (text != 0) {
@@ -64,7 +66,7 @@ int LOG(const char text = 0, const byte* UID = nullptr) {
 		}
 		// else enqueue the new log
 		last_log.text = text;
-		last_log.UID = (uint32)*UID;
+		last_log.UID = (uint32)*UID; // TODO: check memory alignment
 		last_log.time = time(nullptr);
 		log_queue.push(last_log);
 		// and if the connection is not alive return

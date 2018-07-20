@@ -17,16 +17,15 @@
 #include "Debug.h"
 #include "logging.h"
 
-PGM_STR accessScriptURL[] = "/macros/s/" SECRET_ACCESS_SCRIPT_ID "/exec?getUIDlist";
 // start and stop sequences with the same 8 char length as UIDs
-PGM_STR UIDstartSequence[] = "UID_START";
-PGM_STR UIDstopSequence[] =  "UID__STOP";
+PGM_STR UIDstartSequence[] = "UIDSTART";
+PGM_STR UIDstopSequence[] =  "UID_STOP";
 
 void reconnect() {
 	if (!redirect.connected()) {
 		DPRINT("Connecting to script_server_host, result: ");
 		bool connected = redirect.connect(script_server_host, 443);
-		if (connected) LOG(SERVER_RECONNECTION_TEXT);
+		if (connected) log(LOG_MSG_SERVER_RECONNECTION);
 		DPRINTLN(connected);
 	}
 }
@@ -45,7 +44,7 @@ bool cardExistsInDB(const byte* UID) {
 #ifdef REVERSE_DB_SEARCH
 void updateDB() {
 	if (redirect.connected()) {
-		redirect.GET(accessScriptURL, script_server_host);
+		redirect.GET(String(scriptURL)+"UIDlist="+BOARD_ID, script_server_host);
 		String stringUID = redirect.getResponseBody();
 		// check if we got a valid UID string
 		if(stringUID.startsWith(UIDstartSequence) && stringUID.endsWith(UIDstopSequence)) {
@@ -96,7 +95,7 @@ void updateDB() {
 			}
 			stringUID.remove(0);
 		}
-		LOG(DB_UPDATED_TEXT);
+		log(LOG_MSG_DB_UPDATED);
 		DPRINTLN("DB updated");
 	}
 }
@@ -105,7 +104,7 @@ void updateDB() {
 	// if connection is alive
 	if (redirect.connected()) {
 		// get data form spreadsheet
-		redirect.GET(accessScriptURL, script_server_host);
+		redirect.GET(String(scriptURL)+"getUID"+BOARD_ID, script_server_host);
 		String stringUID = redirect.getResponseBody();
 		// check if we got a valid UID string
 		if(stringUID.startsWith(UIDstartSequence) && stringUID.endsWith(UIDstopSequence)) {
@@ -156,7 +155,7 @@ void updateDB() {
 			}
 			stringUID.remove(0);
 		}
-		LOG(DB_UPDATED_TEXT);
+		log(LOG_MSG_DB_UPDATED);
 		DPRINTLN("DB updated");
 	}
 }

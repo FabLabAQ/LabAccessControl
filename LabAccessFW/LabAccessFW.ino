@@ -62,14 +62,14 @@ void setup()
 
 	configTime(TZ_SEC, DST_SEC, NTP_server_address);
 
-	LOG(BOARD_BOOT_TEXT);
+	log(LOG_MSG_BOARD_BOOT);
 	DPRINT("Board finished booting");
 }
 
 
 void loop()
 {
-#if BOARD_ID == '0'
+#if BOARD_ID == BOARD_ID_MAIN_DOOR
 	static bool authenticated = false;
 #endif
 
@@ -77,8 +77,8 @@ void loop()
 	if (millis() > updateInterval + lastUpdate) {
 		reconnect();
 		updateDB();
-		LOG();
-#if BOARD_ID == '0'
+		log();
+#if BOARD_ID == BOARD_ID_MAIN_DOOR
 		digitalWrite(PIN_RELAY, LOW);
 		authenticated = false;
 #endif
@@ -98,15 +98,15 @@ void loop()
 				cardExistsInDB(RFID.uid.uidByte)) {
 			// card authentication succeeded
 			digitalWrite(PIN_RELAY, HIGH);
-#if BOARD_ID == '0'
+#if BOARD_ID == BOARD_ID_MAIN_DOOR
 			authenticated = true;
 			lastUpdate = millis();
 #endif
-			LOG(AUTH_SUCCESS_TEXT, RFID.uid.uidByte);
+			log(LOG_MSG_AUTH_SUCCESS, RFID.uid.uidByte);
 		}
 		else {
 			// authentication error
-			LOG(AUTH_ERROR_TEXT);
+			log(LOG_MSG_AUTH_ERROR);
 		}
 
 		RFID.PICC_HaltA();
@@ -117,20 +117,20 @@ void loop()
 	if (debounced_switch.update()) {
 		// if the door closes or the switch is pressed
 		if (debounced_switch.fell()) {
-#if BOARD_ID == '0'
-			LOG(CLOSED_DOOR_TEXT);
+#if BOARD_ID == BOARD_ID_MAIN_DOOR
+			log(LOG_MSG_CLOSED_DOOR);
 #else
-			LOG(PRESSED_SWITCH_TEXT);
+			log(LOG_MSG_PRESSED_SWITCH);
 #endif
 		}
 		// else if the door opens
-#if BOARD_ID == '0'
+#if BOARD_ID == BOARD_ID_MAIN_DOOR
 		else {
 			if (authenticated) {
-				LOG(OPEN_DOOR_AUTH_TEXT);
+				log(LOG_MSG_OPEN_DOOR_AUTH);
 			}
 			else {
-				LOG(OPEN_DOOR_NOAUTH_TEXT);
+				log(LOG_MSG_OPEN_DOOR_NOAUTH);
 			}
 		}
 		authenticated = false;

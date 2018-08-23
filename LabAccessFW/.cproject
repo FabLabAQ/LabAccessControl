@@ -30,6 +30,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/Bounce2/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/MFRC522/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ESP8266WiFi/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1371915007" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
@@ -47,6 +48,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/Bounce2/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/MFRC522/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ESP8266WiFi/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.200665452" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
@@ -64,6 +66,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/Bounce2/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/MFRC522/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/LabAccessFW/libraries/ESP8266WiFi/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.456402191" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>

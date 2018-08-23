@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-07-20 14:28:22
+//This file has been generated on 2018-08-23 17:36:03
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -20,7 +20,6 @@
 #include "logging.h"
 #include <time.h>
 #include <sys/time.h>
-#include <coredecls.h>
 
 void setup() ;
 void loop() ;

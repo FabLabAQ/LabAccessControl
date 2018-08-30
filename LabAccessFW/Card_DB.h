@@ -1,8 +1,23 @@
 /*
- * Card_DB.h
+ * Lab Access System
+ * (c) 2018 Luca Anastasio
+ * anastasio.lu@gmail.com
+ * www.fablaquila.org
  *
- *  Created on: 21 giu 2018
- *      Author: Luca Anastasio
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 
 #ifndef CARD_DB_H_
@@ -33,9 +48,9 @@ void reconnect() {
 
 bool cardExistsInDB(const byte* UID) {
 	// 1 char for "/", 8 chars for uid string, 1 terminating char
-	char path[10] = "/";
+	char path[9] = "";
 	// append uid in characters to the path
-	hex_to_char(UID, 4, path+1);
+	hex_to_char(UID, 4, path);
 	DPRINTF("Searching for %s\n", path);
 	// check if card exists
 	return SPIFFS.exists(path);
@@ -124,7 +139,7 @@ void updateDB() {
 			// TODO: check if removing a file alterates file order, if so restart
 
 			// open directory to iterate over files
-			Dir dir = SPIFFS.openDir("/");
+			Dir dir = SPIFFS.openDir("");
 			while (dir.next()) {
 				// this loop can take some time
 				yield();
@@ -137,7 +152,7 @@ void updateDB() {
 
 				do {
 					// get the last UID in the string
-					substring = "/" + stringUID.substring(i,8);
+					substring = stringUID.substring(i,8);
 					// if the card in DB is not present in the new UID list remove it
 					if (substring == fileName) {
 						found = true;
@@ -158,7 +173,7 @@ void updateDB() {
 				// this loop can take some time
 				yield();
 				// create new file and then close it to save, name it with the last UID in the string
-				String fileName = "/" + stringUID.substring(0,8);
+				String fileName = stringUID.substring(0,8);
 				File newFile = SPIFFS.open(fileName, "w");
 				newFile.close();
 				DPRINTF("Added %s\n", fileName.c_str());

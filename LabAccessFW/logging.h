@@ -1,8 +1,23 @@
 /*
- * logging.h
+ * Lab Access System
+ * (c) 2018 Luca Anastasio
+ * anastasio.lu@gmail.com
+ * www.fablaquila.org
  *
- *  Created on: 22 giu 2018
- *      Author: Luca Anastasio
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 
 #ifndef LOGGING_H_
@@ -24,7 +39,7 @@
 enum logging_status_code {LOG_MEMORY_FULL, LOG_SENT, LOG_APPENDED, LOG_NOT_SENT, LOG_QUEUE_EMPTY};
 
 struct log_queue_t {
-	const char* text;
+	STR_T text;
 	byte UID[4] = {0, 0, 0, 0};
 	time_t time;
 };
@@ -41,7 +56,7 @@ void logToSheet(log_queue_t* log) {
 	// add timestamp
 	logJson[LOG_TIME_IDENTIFIER] = (long)log->time;
 	// add message
-	logJson[LOG_MESSAGE_IDENTIFIER] = log->text;
+	logJson[LOG_MESSAGE_IDENTIFIER] = String((STR_T)log->text);
 	// add uid
 	//logJson[LOG_UID_IDENTIFIER] = "";
 	if (log->UID[0] || log->UID[1] || log->UID[2] || log->UID[3]) {
@@ -77,7 +92,7 @@ int LOG() {
 	return LOG_SENT;
 }
 
-int LOG(const char* text) {
+int LOG(STR_T text) {
 	log_queue_t last_log;
 	// if there isn't enough available RAM then do nothing
 	if (ESP.getFreeHeap() < minimum_free_heap) {
@@ -93,7 +108,7 @@ int LOG(const char* text) {
 	}
 	else return LOG();
 }
-int LOG(const char* text, const byte* UID) {
+int LOG(STR_T text, const byte* UID) {
 	log_queue_t last_log;
 	// if there isn't enough available RAM then do nothing
 	if (ESP.getFreeHeap() < minimum_free_heap) {

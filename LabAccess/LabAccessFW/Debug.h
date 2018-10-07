@@ -25,7 +25,7 @@
 
 #pragma once
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
   #define DSTART()				Serial.begin(115200)
@@ -35,6 +35,7 @@
 #else
   #define DSTART()
   #define DPRINT(...)
+  #define DPRINTF(...)
   #define DPRINTLN(...)
 #endif
 

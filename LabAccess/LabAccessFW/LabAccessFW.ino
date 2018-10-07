@@ -37,8 +37,6 @@
 #include <sys/time.h>
 //#include <coredecls.h>
 
-// TODO add time keeping with NTP and timestamp on logs
-
 MFRC522 RFID;
 Bounce debounced_switch;
 
@@ -89,7 +87,7 @@ void setup()
 
 	// SPI and RFID
 	SPI.begin();
-	SPI.setHwCs(true);
+	//SPI.setHwCs(true);
 	RFID.PCD_Init();
 
 	configTime(TZ_SEC, DST_SEC, NTP_server_address);

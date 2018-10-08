@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -14381,20 +14381,19 @@ Source: &lt;a href="https://toshiba.semicon-storage.com/info/docget.jsp?did=1675
 <part name="GND7" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="R5" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:26057/1" value="2R"/>
 <part name="FRAME1" library="SparkFun-Aesthetics" library_urn="urn:adsk.eagle:library:507" deviceset="FRAME-A4L" device=""/>
-<part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805K" package3d_urn="urn:adsk.eagle:package:23681/2" value="22uF"/>
-<part name="C2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805K" package3d_urn="urn:adsk.eagle:package:23681/2" value="22uF"/>
-<part name="C3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603K" package3d_urn="urn:adsk.eagle:package:23680/2" value="100nF"/>
+<part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603K" package3d_urn="urn:adsk.eagle:package:23680/2" value="1uF"/>
+<part name="C2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805K" package3d_urn="urn:adsk.eagle:package:23681/2" value="10uF"/>
 <part name="Q1" library="Seeed-Transistor" library_urn="urn:adsk.eagle:library:477" deviceset="SMD-MOSFET-N-CH-60V-300MA-LOGIC-LEVEL-FET-2N7002(SOT-23)" device="" package3d_urn="urn:adsk.eagle:package:33015/1" value="AO3400"/>
-<part name="D1" library="Seeed-Diode" library_urn="urn:adsk.eagle:library:467" deviceset="DIODE-GEN-PURPOSE-1KV-1A(DO-214AC)" device="" package3d_urn="urn:adsk.eagle:package:32508/1" value="1N4007"/>
-<part name="R6" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:26057/1" value="3.3k"/>
+<part name="D1" library="Seeed-Diode" library_urn="urn:adsk.eagle:library:467" deviceset="DIODE-GEN-PURPOSE-1KV-1A(DO-214AC)" device="" package3d_urn="urn:adsk.eagle:package:32508/1" value="1N4001"/>
+<part name="R6" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:26057/1" value="RSW"/>
 <part name="R4" library="varistor" library_urn="urn:adsk.eagle:library:410" deviceset="S07K250" device="" package3d_urn="urn:adsk.eagle:package:30540/1" value="250V"/>
 <part name="C5" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="102-064X133" package3d_urn="urn:adsk.eagle:package:23653/1" value="100nF"/>
 <part name="U$2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="L-US" device="6000-XXX-RC" package3d_urn="urn:adsk.eagle:package:23538/1" value="10mH"/>
 <part name="+3V9" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+3V3" device=""/>
-<part name="C6" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805K" package3d_urn="urn:adsk.eagle:package:23681/2" value="22uF"/>
+<part name="C6" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603K" package3d_urn="urn:adsk.eagle:package:23680/2" value="1uF"/>
 <part name="J1" library="Seeed-Connector" library_urn="urn:adsk.eagle:library:478" deviceset="DIP-BLACK-MALE-HEADER-VERT(4P-2.54)" device="" package3d_urn="urn:adsk.eagle:package:33137/1" value="4p-2.54"/>
 <part name="IC1" library="TLP281(GB-TP_F)" deviceset="TLP281(GB-TP,F)" device="" value="TLP281"/>
-<part name="R1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:26057/1"/>
+<part name="R1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:26057/1" value="ROC"/>
 <part name="R2" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:26057/1" value="0"/>
 <part name="R7" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:26057/1" value="0"/>
 <part name="GND6" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
@@ -14452,7 +14451,6 @@ GPIO16 HIGH during boot</text>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
 <instance part="C1" gate="G$1" x="88.9" y="55.88"/>
 <instance part="C2" gate="G$1" x="99.06" y="22.86"/>
-<instance part="C3" gate="G$1" x="111.76" y="22.86"/>
 <instance part="Q1" gate="G$1" x="73.66" y="43.18" rot="MR0"/>
 <instance part="D1" gate="G$1" x="73.66" y="55.88" rot="R90"/>
 <instance part="R6" gate="G$1" x="251.46" y="78.74" rot="R270"/>
@@ -14463,7 +14461,7 @@ GPIO16 HIGH during boot</text>
 <instance part="C6" gate="G$1" x="121.92" y="22.86"/>
 <instance part="J1" gate="G$1" x="134.62" y="143.51" rot="R180"/>
 <instance part="IC1" gate="G$1" x="194.31" y="71.12"/>
-<instance part="R1" gate="G$1" x="184.15" y="68.58"/>
+<instance part="R1" gate="G$1" x="184.15" y="71.12"/>
 <instance part="R2" gate="G$1" x="213.36" y="77.47"/>
 <instance part="R7" gate="G$1" x="213.36" y="62.23"/>
 <instance part="GND6" gate="1" x="234.95" y="57.15"/>
@@ -14523,14 +14521,10 @@ GPIO16 HIGH during boot</text>
 <pinref part="GND1" gate="1" pin="GND"/>
 <wire x1="129.54" y1="27.94" x2="121.92" y2="27.94" width="0.1524" layer="91"/>
 <pinref part="C2" gate="G$1" pin="1"/>
-<wire x1="121.92" y1="27.94" x2="111.76" y2="27.94" width="0.1524" layer="91"/>
-<wire x1="111.76" y1="27.94" x2="99.06" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="27.94" x2="99.06" y2="27.94" width="0.1524" layer="91"/>
 <wire x1="99.06" y1="27.94" x2="91.44" y2="27.94" width="0.1524" layer="91"/>
 <wire x1="99.06" y1="25.4" x2="99.06" y2="27.94" width="0.1524" layer="91"/>
 <junction x="99.06" y="27.94"/>
-<pinref part="C3" gate="G$1" pin="1"/>
-<wire x1="111.76" y1="25.4" x2="111.76" y2="27.94" width="0.1524" layer="91"/>
-<junction x="111.76" y="27.94"/>
 <pinref part="C6" gate="G$1" pin="1"/>
 <wire x1="121.92" y1="25.4" x2="121.92" y2="27.94" width="0.1524" layer="91"/>
 <junction x="121.92" y="27.94"/>
@@ -14585,14 +14579,10 @@ GPIO16 HIGH during boot</text>
 <pinref part="+3V1" gate="G$1" pin="+3V3"/>
 <wire x1="129.54" y1="12.7" x2="121.92" y2="12.7" width="0.1524" layer="91"/>
 <pinref part="C2" gate="G$1" pin="2"/>
-<wire x1="121.92" y1="12.7" x2="111.76" y2="12.7" width="0.1524" layer="91"/>
-<wire x1="111.76" y1="12.7" x2="99.06" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="121.92" y1="12.7" x2="99.06" y2="12.7" width="0.1524" layer="91"/>
 <wire x1="99.06" y1="12.7" x2="91.44" y2="12.7" width="0.1524" layer="91"/>
 <wire x1="99.06" y1="17.78" x2="99.06" y2="12.7" width="0.1524" layer="91"/>
 <junction x="99.06" y="12.7"/>
-<pinref part="C3" gate="G$1" pin="2"/>
-<wire x1="111.76" y1="17.78" x2="111.76" y2="12.7" width="0.1524" layer="91"/>
-<junction x="111.76" y="12.7"/>
 <pinref part="C6" gate="G$1" pin="2"/>
 <wire x1="121.92" y1="17.78" x2="121.92" y2="12.7" width="0.1524" layer="91"/>
 <junction x="121.92" y="12.7"/>
@@ -14818,31 +14808,30 @@ GPIO16 HIGH during boot</text>
 <wire x1="191.77" y1="71.12" x2="194.31" y2="71.12" width="0.1524" layer="91"/>
 <wire x1="191.77" y1="71.12" x2="191.77" y2="77.47" width="0.1524" layer="91"/>
 <wire x1="191.77" y1="77.47" x2="208.28" y2="77.47" width="0.1524" layer="91"/>
-<pinref part="X1" gate="-2" pin="K"/>
-<wire x1="176.53" y1="71.12" x2="191.77" y2="71.12" width="0.1524" layer="91"/>
-<junction x="191.77" y="71.12"/>
-<label x="176.53" y="71.12" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="K'" class="0">
-<segment>
-<pinref part="X1" gate="-1" pin="K"/>
-<pinref part="R1" gate="G$1" pin="1"/>
-<wire x1="176.53" y1="68.58" x2="179.07" y2="68.58" width="0.1524" layer="91"/>
-<label x="176.53" y="68.58" size="1.778" layer="95"/>
+<pinref part="R1" gate="G$1" pin="2"/>
+<wire x1="189.23" y1="71.12" x2="194.31" y2="71.12" width="0.1524" layer="91"/>
+<junction x="194.31" y="71.12"/>
+<label x="190.5" y="71.12" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="K" class="0">
 <segment>
 <pinref part="IC1" gate="G$1" pin="CATHODE"/>
-<label x="191.77" y="68.58" size="1.778" layer="95"/>
 <pinref part="R7" gate="G$1" pin="1"/>
 <wire x1="191.77" y1="68.58" x2="194.31" y2="68.58" width="0.1524" layer="91"/>
 <wire x1="191.77" y1="68.58" x2="191.77" y2="62.23" width="0.1524" layer="91"/>
 <wire x1="191.77" y1="62.23" x2="208.28" y2="62.23" width="0.1524" layer="91"/>
-<pinref part="R1" gate="G$1" pin="2"/>
-<wire x1="189.23" y1="68.58" x2="191.77" y2="68.58" width="0.1524" layer="91"/>
-<junction x="191.77" y="68.58"/>
+<pinref part="X1" gate="-1" pin="K"/>
+<wire x1="176.53" y1="68.58" x2="194.31" y2="68.58" width="0.1524" layer="91"/>
+<junction x="194.31" y="68.58"/>
+<label x="190.5" y="68.58" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$9" class="0">
+<segment>
+<pinref part="X1" gate="-2" pin="K"/>
+<pinref part="R1" gate="G$1" pin="1"/>
+<wire x1="176.53" y1="71.12" x2="179.07" y2="71.12" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

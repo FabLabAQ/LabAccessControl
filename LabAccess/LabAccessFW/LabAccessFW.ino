@@ -37,7 +37,7 @@
 #include <sys/time.h>
 //#include <coredecls.h>
 
-MFRC522 RFID;
+MFRC522 RFID(PIN_CS, UINT8_MAX);
 Bounce debounced_switch;
 
 MFRC522::MIFARE_Key private_key_a = SECRET_CARD_PRIVATE_KEY_A;
@@ -71,6 +71,7 @@ void setup()
 	 */
 
 	pinMode(PIN_RELAY, OUTPUT);
+	pinMode(PIN_LED, OUTPUT);
 	debounced_switch.attach(PIN_SWITCH);
 	debounced_switch.interval(SWITCH_DEBOUNCE_INT);
 
@@ -110,6 +111,7 @@ void loop()
 		LOG();
 #if BOARD_ID == BOARD_ID_MAIN_DOOR
 		digitalWrite(PIN_RELAY, LOW);
+		digitalWrite(PIN_LED, HIGH);
 		authenticated = false;
 #endif
 		lastUpdate = millis();
@@ -128,6 +130,7 @@ void loop()
 				cardExistsInDB(RFID.uid.uidByte)) {
 			// card authentication succeeded
 			digitalWrite(PIN_RELAY, HIGH);
+			digitalWrite(PIN_LED, LOW);
 #if BOARD_ID == BOARD_ID_MAIN_DOOR
 			authenticated = true;
 			lastUpdate = millis();
@@ -166,5 +169,6 @@ void loop()
 		authenticated = false;
 #endif
 		digitalWrite(PIN_RELAY, LOW);
+		digitalWrite(PIN_LED, HIGH);
 	}
 }

@@ -49,9 +49,11 @@
 #endif
 
 #define PIN_INTERRUPT 4
-#define PIN_RELAY 16
-#define PIN_SWITCH 5
+#define PIN_EXTSW 5
+#define PIN_RELAY 15
+#define PIN_SWITCH 0
 #define PIN_LED 2
+#define PIN_CS 16
 #define SWITCH_DEBOUNCE_INT 500
 
 PGM_STR LOG_MSG_BOARD_BOOT[] = "Board booted successfully";

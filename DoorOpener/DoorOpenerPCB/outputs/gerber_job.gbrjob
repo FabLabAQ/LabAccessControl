@@ -1,0 +1,13 @@
+G04 Gerber job file.*
+%TF.FileFunction,JobInfo*%
+%TF.GenerationSoftware,Autodesk,EAGLE,9.0.1*%
+%TF.CreationDate,2018-10-12T14:53:16Z*%
+%TF.Part,Single*%
+%MOMM*%
+%TJ.B_Owner,Luca Anastasio <luca.anastasio@student.univaq.it>*%
+%TJ.B_ID,pot board diy*%
+%TJ.B_LayerNum,2*%
+%TJ.B_Thickness,1.570000*%
+%TJ.B_Size_X,26.000000*%
+%TJ.B_Size_Y,34.000000*%
+M02*

@@ -25,7 +25,7 @@
 
 #pragma once
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
   #define DSTART()				Serial.begin(115200)

@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">CardMaker</string>
+    <string name="main_tab_title">Write tag</string>
+    <string name="settings_tab_title">Settings</string>
+    <string name="copy">Copy</string>
+    <string name="ready">Ready</string>
+    <string name="set">Set</string>
+    <string name="master_key">Master Key</string>
+    <string name="card_id">card id</string>
+    <string name="master_key_not_set">Master key not set</string>
+    <string name="master_key_set">Master key set</string>
+    <string name="alert_dialog_msg">Warning: this operation can\'t be undone. Once set, the new key can\'t be extracted.</string>
+    <string name="confirm_key_change">Confirm key change?</string>
+    <string name="enable_security">Enable screen lock and encryption to continue.</string>
+    <string name="copied_to_clip">Copied to clipboard</string>
+    <string name="unsupported_tag">Unsupported tag</string>
+    <string name="new_tag_ok">New tag programmed</string>
+    <string name="tag_already_prog">Tag already programmed</string>
+    <string name="unknown_key">Unknown tag key</string>
+    <string name="key_gen_error">Key generation error</string>
+    <string name="write_tag_err">Error writing tag</string>
+    <string name="disabled">Disabled</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="wrong_key_size">Wrong key size, should be 256 bit base64 encoded</string>
+    <string name="master_key_updated">Master key updated</string>
+    <string name="canceled">Canceled</string>
+    <string name="change">Change</string>
+    <string name="master_key_error">Error setting master key</string>
+    <string name="restore_tags">Restore programmed tags</string>
+    <string name="tag_restored">Tag restored</string>
+    <string name="enable_nfc">Enable NFC to continue</string>
+</resources>

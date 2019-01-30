@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CardMaker</string>
+    <string name="main_tab_title">Scrivi tessera</string>
+    <string name="settings_tab_title">Impostazioni</string>
+    <string name="copy">Copia</string>
+    <string name="ready">Pronto</string>
+    <string name="set">Imposta</string>
+    <string name="master_key">Chiave principale</string>
+    <string name="card_id">ID tessera</string>
+    <string name="master_key_not_set">Chiave non impostata</string>
+    <string name="master_key_set">Chiave impostata</string>
+    <string name="alert_dialog_msg">Attenzione: l\'operazione non può essere annullata. Una volta impostata, la nuova chiave non può essere estratta.</string>
+    <string name="confirm_key_change">Confermare cambio chiave?</string>
+    <string name="enable_security">Abilitare blocco schermo e crittografia per continuare.</string>
+    <string name="copied_to_clip">Copiato negli appunti</string>
+    <string name="unsupported_tag">Tessera non supportata</string>
+    <string name="new_tag_ok">Nuova tessera programmata</string>
+    <string name="tag_already_prog">Tessera già programmata</string>
+    <string name="unknown_key">Chiave della tessera sconosciuta</string>
+    <string name="key_gen_error">Errore nella generazione della chiave</string>
+    <string name="write_tag_err">Errore nella scrittura della tessera</string>
+    <string name="disabled">Disabilitato</string>
+    <string name="yes">Sì</string>
+    <string name="no">No</string>
+    <string name="wrong_key_size">Dimensione della chiave sbagliata, dovrebbe essere 256 bit codificata base64</string>
+    <string name="master_key_updated">Chiave principale aggiornata</string>
+    <string name="canceled">Annullato</string>
+    <string name="change">Cambia</string>
+    <string name="master_key_error">Errore durante il cambio della chiave</string>
+    <string name="restore_tags">Ripristina tessere programmate</string>
+    <string name="tag_restored">Tessera ripristinata</string>
+    <string name="enable_nfc">Attiva NFC per continuare</string>
+</resources>

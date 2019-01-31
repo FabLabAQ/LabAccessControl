@@ -175,6 +175,10 @@ public class MainTab extends Fragment {
                     else note(getString(R.string.tag_restored));
                 }
                 else*/ note(getString(R.string.tag_already_prog));
+                idBase64 = Base64.encodeToString(id, Base64.DEFAULT);
+                textOutput.setText(idBase64);
+                CopyToClipboardBtn.setClickable(true);
+                CopyToClipboardBtn.setEnabled(true);
                 try { mifareUlTag.close(); } catch (IOException e) { }
             }
             else {

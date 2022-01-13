@@ -81,6 +81,11 @@ mbedtls_des3_context;
 /*
  * Expanded DES S-boxes
  */
+
+
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t SB1[64] =
 {
     0x01010400, 0x00000000, 0x00010000, 0x01010404,
@@ -101,6 +106,9 @@ static const uint32_t SB1[64] =
     0x00010004, 0x00010400, 0x00000000, 0x01010004
 };
 
+#if defined(AVR)
+PROGMEM
+#endif
 static const uint32_t SB2[64] =
 {
     0x80108020, 0x80008000, 0x00008000, 0x00108020,
@@ -121,6 +129,9 @@ static const uint32_t SB2[64] =
     0x80000000, 0x80100020, 0x80108020, 0x00108000
 };
 
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t SB3[64] =
 {
     0x00000208, 0x08020200, 0x00000000, 0x08020008,
@@ -141,6 +152,9 @@ static const uint32_t SB3[64] =
     0x00020208, 0x00000008, 0x08020008, 0x00020200
 };
 
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t SB4[64] =
 {
     0x00802001, 0x00002081, 0x00002081, 0x00000080,
@@ -161,6 +175,9 @@ static const uint32_t SB4[64] =
     0x00000080, 0x00800000, 0x00002000, 0x00802080
 };
 
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t SB5[64] =
 {
     0x00000100, 0x02080100, 0x02080000, 0x42000100,
@@ -181,6 +198,9 @@ static const uint32_t SB5[64] =
     0x00000000, 0x40080000, 0x02080100, 0x40000100
 };
 
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t SB6[64] =
 {
     0x20000010, 0x20400000, 0x00004000, 0x20404010,
@@ -201,6 +221,9 @@ static const uint32_t SB6[64] =
     0x20404000, 0x20000000, 0x00400010, 0x20004010
 };
 
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t SB7[64] =
 {
     0x00200000, 0x04200002, 0x04000802, 0x00000000,
@@ -221,6 +244,9 @@ static const uint32_t SB7[64] =
     0x04000002, 0x04000800, 0x00000800, 0x00200002
 };
 
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t SB8[64] =
 {
     0x10001040, 0x00001000, 0x00040000, 0x10041040,
@@ -244,6 +270,9 @@ static const uint32_t SB8[64] =
 /*
  * PC1: left and right halves bit-swap
  */
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t LHs[16] =
 {
     0x00000000, 0x00000001, 0x00000100, 0x00000101,
@@ -252,6 +281,9 @@ static const uint32_t LHs[16] =
     0x01010000, 0x01010001, 0x01010100, 0x01010101
 };
 
+#if defined(AVR) // || defined(ESP8266)
+PROGMEM
+#endif
 static const uint32_t RHs[16] =
 {
     0x00000000, 0x01000000, 0x00010000, 0x01010000,
@@ -291,6 +323,22 @@ static const uint32_t RHs[16] =
 /*
  * DES round macro
  */
+#if defined(AVR)
+#define DES_ROUND(X,Y)                          \
+{                                               \
+    T = *SK++ ^ X;                              \
+    Y ^= pgm_read_dword(&SB8[ (T      ) & 0x3F ]) ^              \
+         pgm_read_dword(&SB6[ (T >>  8) & 0x3F ]) ^              \
+         pgm_read_dword(&SB4[ (T >> 16) & 0x3F ]) ^              \
+         pgm_read_dword(&SB2[ (T >> 24) & 0x3F ]);               \
+                                                \
+    T = *SK++ ^ ((X << 28) | (X >> 4));         \
+    Y ^= pgm_read_dword(&SB7[ (T      ) & 0x3F ]) ^              \
+         pgm_read_dword(&SB5[ (T >>  8) & 0x3F ]) ^              \
+         pgm_read_dword(&SB3[ (T >> 16) & 0x3F ]) ^              \
+         pgm_read_dword(&SB1[ (T >> 24) & 0x3F ]);               \
+}
+#else
 #define DES_ROUND(X,Y)                          \
 {                                               \
     T = *SK++ ^ X;                              \
@@ -305,6 +353,7 @@ static const uint32_t RHs[16] =
          SB3[ (T >> 16) & 0x3F ] ^              \
          SB1[ (T >> 24) & 0x3F ];               \
 }
+#endif
 
 #define SWAP(a,b) { uint32_t t = a; a = b; b = t; t = 0; }
 
@@ -321,17 +370,26 @@ void mbedtls_des_setkey( uint32_t SK[32], const unsigned char key[MBEDTLS_DES_KE
      */
     T =  ((Y >>  4) ^ X) & 0x0F0F0F0F;  X ^= T; Y ^= (T <<  4);
     T =  ((Y      ) ^ X) & 0x10101010;  X ^= T; Y ^= (T      );
+	#if defined(AVR)
+    X =   (pgm_read_dword(&LHs[ (X      ) & 0xF]) << 3) | (pgm_read_dword(&LHs[ (X >>  8) & 0xF ]) << 2)
+        | (pgm_read_dword(&LHs[ (X >> 16) & 0xF]) << 1) | (pgm_read_dword(&LHs[ (X >> 24) & 0xF ])     )
+        | (pgm_read_dword(&LHs[ (X >>  5) & 0xF]) << 7) | (pgm_read_dword(&LHs[ (X >> 13) & 0xF ]) << 6)
+        | (pgm_read_dword(&LHs[ (X >> 21) & 0xF]) << 5) | (pgm_read_dword(&LHs[ (X >> 29) & 0xF ]) << 4);
 
-    X =   (LHs[ (X      ) & 0xF] << 3) | (LHs[ (X >>  8) & 0xF ] << 2)
+    Y =   (pgm_read_dword(&RHs[ (Y >>  1) & 0xF]) << 3) | (pgm_read_dword(&RHs[ (Y >>  9) & 0xF ]) << 2)
+        | (pgm_read_dword(&RHs[ (Y >> 17) & 0xF]) << 1) | (pgm_read_dword(&RHs[ (Y >> 25) & 0xF ])     )
+        | (pgm_read_dword(&RHs[ (Y >>  4) & 0xF]) << 7) | (pgm_read_dword(&RHs[ (Y >> 12) & 0xF ]) << 6)
+        | (pgm_read_dword(&RHs[ (Y >> 20) & 0xF]) << 5) | (pgm_read_dword(&RHs[ (Y >> 28) & 0xF ]) << 4);
+	#else
+	X =   (LHs[ (X      ) & 0xF] << 3) | (LHs[ (X >>  8) & 0xF ] << 2)
         | (LHs[ (X >> 16) & 0xF] << 1) | (LHs[ (X >> 24) & 0xF ]     )
         | (LHs[ (X >>  5) & 0xF] << 7) | (LHs[ (X >> 13) & 0xF ] << 6)
         | (LHs[ (X >> 21) & 0xF] << 5) | (LHs[ (X >> 29) & 0xF ] << 4);
-
     Y =   (RHs[ (Y >>  1) & 0xF] << 3) | (RHs[ (Y >>  9) & 0xF ] << 2)
         | (RHs[ (Y >> 17) & 0xF] << 1) | (RHs[ (Y >> 25) & 0xF ]     )
         | (RHs[ (Y >>  4) & 0xF] << 7) | (RHs[ (Y >> 12) & 0xF ] << 6)
         | (RHs[ (Y >> 20) & 0xF] << 5) | (RHs[ (Y >> 28) & 0xF ] << 4);
-
+	#endif
     X &= 0x0FFFFFFF;
     Y &= 0x0FFFFFFF;
 

@@ -29,6 +29,14 @@
 #ifndef MIFAREULTRALIGHTAUTH_H
 #define MIFAREULTRALIGHTAUTH_H
 
+#define DEBUG
+
+#ifdef DEBUG
+#define DBGHEX(str, hex, len) Serial.print(F(str)); printHexArray(hex, len);
+#else
+#define DBGHEX(str, hex, len)
+#endif
+
 class MifareUltralight : public MFRC522 {
   private:
 
@@ -69,12 +77,12 @@ class MifareUltralight : public MFRC522 {
 
     // TODO: return appropriate codes
 
-    bool Authenticate(const uint8_t* _key, bool rotate = false) {
+    StatusCode Authenticate(const uint8_t* _key, bool rotate = false) {
     	SetKey(_key, rotate);
     	return Authenticate();
     }
 
-    bool Authenticate() {
+    StatusCode Authenticate() {
 
       StatusCode result;
 
@@ -82,24 +90,19 @@ class MifareUltralight : public MFRC522 {
 	  mbedtls_des3_init( &ctx3 );
 	  mbedtls_des3_set2key_dec( &ctx3, key );
 	
-      Serial.print(F("Authenticating with key (16 byte): "));
-      printHexArray(key, 16);
+      DBGHEX("Authenticating with key (16 byte): ",key, 16);
 
 
       // send authentication command and get the encoded random number: ek(rndB)
       uint8_t retData[9];
       uint8_t AuthCMD[] = {0x1A, 0x00};
-      Serial.print(F("Authentication phase 1: "));
-      printHexArray(AuthCMD, 2);
+      DBGHEX("Authentication phase 1: ",AuthCMD, 2);
       uint8_t retLen = 11;
-      if ((result = UlTransceive(AuthCMD, 2, retData, &retLen)) != STATUS_OK) {
-      	return false;
-      }
-      Serial.print(F("Received: "));
-      printHexArray(retData, 9);
+      if ((result = UlTransceive(AuthCMD, 2, retData, &retLen)) != STATUS_OK) return result;
+      DBGHEX("Received: ",retData, 9);
 
       // check if the response is correct
-      if (retData[0] != 0xAF || retLen != 11) return false;
+      if (retData[0] != 0xAF || retLen != 11) return STATUS_ERROR;
       // decrypt the random number (skip the first byte)
       uint8_t RndB[9];
       // RndB <= decrypt(retData+1)
@@ -107,8 +110,7 @@ class MifareUltralight : public MFRC522 {
 		byte iv[8] = {0,0,0,0,0,0,0,0};
 		mbedtls_des3_crypt_cbc( &ctx3, MBEDTLS_DES_DECRYPT, 8, iv, retData+1, RndB );
       
-      Serial.print(F("Decrypted RndB: "));
-      printHexArray(RndB, 8);
+      DBGHEX("Decrypted RndB: ",RndB, 8);
 
       // shift left
       RndB[8] = RndB[0];
@@ -118,8 +120,7 @@ class MifareUltralight : public MFRC522 {
       uint8_t Rnd2[16];
       memcpy(Rnd2, RndA, 8);
       memcpy(Rnd2 + 8, RndB + 1, 8);
-      Serial.print(F("RndA | RndB': "));
-      printHexArray(Rnd2, 16);
+      DBGHEX("RndA | RndB': ",Rnd2, 16);
 
       uint8_t AuthCMD2[17] = {0xAF};
       // encrypt RndA | RndB+1
@@ -130,13 +131,11 @@ class MifareUltralight : public MFRC522 {
       //des.do_3des_encrypt(Rnd2, 16, AuthCMD2 + 1, key);
       // send second authentication command: 0xAF | ek(RndA | RndB')
       // and receive encrypted RndA' (shifted)
-      Serial.print(F("Authentication phase 2: "));
-      printHexArray(AuthCMD2, 17);
-      if (UlTransceive(AuthCMD2, 17, retData, &retLen) != STATUS_OK) return false;
-      Serial.print(F("Received: "));
-      printHexArray(retData, 9);
+      DBGHEX("Authentication phase 2: ",AuthCMD2, 17);
+      if ((result = UlTransceive(AuthCMD2, 17, retData, &retLen)) != STATUS_OK) return result;
+      DBGHEX("Received: ",retData, 9);
       // check if the response is correct
-      if (retData[0] != 0x00 || retLen != 11) return false;
+      if (retData[0] != 0x00 || retLen != 11) return STATUS_ERROR;
 
       // decrypt RndA'
       uint8_t RndA1[8];
@@ -147,12 +146,11 @@ class MifareUltralight : public MFRC522 {
       mbedtls_des3_set2key_dec( &ctx3, key );
       mbedtls_des3_crypt_cbc( &ctx3, MBEDTLS_DES_DECRYPT, 8, iv, retData+1, RndA1 );
       //des.do_3des_decrypt(retData+1, 8, RndA1, key, iv);
-      Serial.print(F("Decrypted RndA': "));
-      printHexArray(RndA1, 8);
+      DBGHEX("Decrypted RndA': ",RndA1, 8);
       // check if RndA' matches
       RndA[8] = RndA[0];
-      if (strncmp((char*)RndA + 1, (char*)RndA1, 8) != 0) return false;
-      return true;
+      if (strncmp((char*)RndA + 1, (char*)RndA1, 8) != 0) return STATUS_ERROR;
+      return STATUS_OK;
     }
 
 };

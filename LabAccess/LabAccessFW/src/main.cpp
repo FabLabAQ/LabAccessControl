@@ -20,7 +20,7 @@
  *
  */
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include "secret_keys.h"
 #include "settings.h"
@@ -35,6 +35,7 @@
 #include "logging.h"
 #include <time.h>
 #include <sys/time.h>
+#include "LabAccessOTA.h"
 //#include <coredecls.h>
 
 MFRC522 RFID(PIN_CS, UINT8_MAX);
@@ -82,9 +83,11 @@ void setup()
 	WiFi.begin(SECRET_WIFI_SSID, SECRET_WIFI_PASSPHRASE);
 
 	// OTA, with password and individual hostname
-	ArduinoOTA.setPassword(SECRET_OTA_PASSWORD);
-	ArduinoOTA.setHostname(BOARD_NAME);
-	ArduinoOTA.begin();
+	// ArduinoOTA.setPassword(SECRET_OTA_PASSWORD);
+	// ArduinoOTA.setHostname(BOARD_NAME);
+	// ArduinoOTA.begin();
+
+	setupOTA();
 
 	// SPI and RFID
 	SPI.begin();
@@ -100,6 +103,7 @@ void setup()
 
 void loop()
 {
+	handleOTA();
 #if BOARD_ID == BOARD_ID_MAIN_DOOR
 	static bool authenticated = false;
 #endif

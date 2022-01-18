@@ -48,9 +48,9 @@ std::queue<log_queue_t> log_queue;
 
 void logToSheet(log_queue_t* log) {
 	// allocate static json buffer
-	StaticJsonBuffer<JSON_OBJECT_SIZE(6)> logJsonBuffer;
+	DynamicJsonDocument logJson(JSON_OBJECT_SIZE(6));
 	// new json object
-	JsonObject& logJson = logJsonBuffer.createObject();
+	//JsonObject& logJson = logJsonBuffer.createObject();
 	// add board id
 	logJson[LOG_BOARD_IDENTIFIER] = F(BOARD_NAME);
 	// add timestamp
@@ -68,7 +68,7 @@ void logToSheet(log_queue_t* log) {
 	// send to sheet
 	redirect.setContentTypeHeader("application/json");
 	String payload;
-	logJson.printTo(payload);
+	serializeJson(logJson, payload);
 	DPRINTF("Payload: %s\n", payload.c_str());
 	redirect.POST(String(logScriptURL), script_server_host, payload);
 }

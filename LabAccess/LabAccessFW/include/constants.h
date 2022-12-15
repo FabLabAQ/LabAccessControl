@@ -28,33 +28,19 @@
 
 #define PGM_STR const char //PROGMEM //__attribute__((aligned(4)))
 
-#define BOARD_ID_MAIN_DOOR	0
-#define BOARD_ID_CNC		1
-#define BOARD_ID_LASER		2
-#define BOARD_ID_ULTIFAKER	3
-#define BOARD_ID_SAW		4
-
-#define BOARD_ID BOARD_ID_MAIN_DOOR
-
-#if BOARD_ID == BOARD_ID_MAIN_DOOR
-#define BOARD_NAME "MainDoor"
-#elif BOARD_ID == BOARD_ID_CNC
-#define BOARD_NAME "CNC"
-#elif BOARD_ID == BOARD_ID_LASER
-#define BOARD_NAME "Laser"
-#elif BOARD_ID == BOARD_ID_ULTIFAKER
-#define BOARD_NAME "Ultifaker"
-#elif BOARD_ID == BOARD_ID_SAW
-#define BOARD_NAME "Saw"
-#endif
-
 #define PIN_INTERRUPT 4
 #define PIN_EXTSW 5
 #define PIN_RELAY 15
 #define PIN_SWITCH 0
 #define PIN_LED 2
 #define PIN_CS 16
-#define SWITCH_DEBOUNCE_INT 500
+const int extsw_deb_time = 500;
+const int intsw_deb_time = 100;
+#ifdef LAB_ACCESS_DEBUG
+const int setsw_deb_time = 1000;
+#else
+const int setsw_deb_time = 10000;
+#endif
 
 PGM_STR LOG_MSG_BOARD_BOOT[] = "Board booted successfully";
 PGM_STR LOG_MSG_SERVER_RECONNECTION[] = "Server reconnected";
@@ -86,14 +72,15 @@ PGM_STR LOG_MSG_DB_UPDATED[] = "Card database updated";
 //#define LOG_MSG_OPEN_DOOR_NOAUTH "Door opened WITHOUT authentication"
 //#define LOG_MSG_DB_UPDATED "Card database updated"
 
-#define STR_T const char *
-
 const uint32_t minimum_free_heap = 4000;
-const unsigned long updateInterval = 30000, cardCheckDelay = 500;
+const unsigned long updateInterval = 90000, cardCheckDelay = 500;
+const uint32_t http_update_led_blink = 200;
 HTTPSRedirect redirect(443);
 const char script_server_host[] = "script.google.com";
-PGM_STR logScriptURL[] = "/macros/s/" SECRET_LOG_SCRIPT_ID "/exec?log";
-PGM_STR accessScriptURL[] = "/macros/s/" SECRET_ACCESS_SCRIPT_ID "/exec?boardName=" BOARD_NAME;
+//PGM_STR logScriptURL[] = "/macros/s/" SECRET_LOG_SCRIPT_ID "/exec?log";
+//PGM_STR accessScriptURL[] = "/macros/s/" SECRET_ACCESS_SCRIPT_ID "/exec?boardName=" BOARD_NAME;
+
+static const char* config_filename = "config.json";
 
 const char NTP_server_address[] = "pool.ntp.org";
 #define TZ              1       // (utc+) TZ in hours

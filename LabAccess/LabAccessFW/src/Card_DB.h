@@ -23,15 +23,17 @@
 #ifndef CARD_DB_H_
 #define CARD_DB_H_
 
-#include <FS.h>
+#include <LittleFS.h>
 #include <MFRC522.h>
 #include <Arduino.h>
 #include "hex_utils.h"
-#include "secret_keys.h"
 #include "string.h"
-#include "Debug.h"
+
 #include "logging.h"
-#include "settings.h"
+#include "constants.h"
+
+#define DEBUG_FLAG "CARD_DB"
+#include "la_debug.h"
 
 // start and stop sequences with the same 8 char length as UIDs
 PGM_STR UIDstartSequence[] = "UIDSTART";
@@ -40,20 +42,22 @@ PGM_STR UIDstopSequence[] =  "UID_STOP";
 void reconnect() {
 	if (!redirect.connected()) {
 
-		bool connected = redirect.connect(script_server_host, 443);
-		if (connected) LOG(LOG_MSG_SERVER_RECONNECTION);
-		DPRINTF("Connecting to script_server_host, result: %d\n", connected);
+		int res1 = redirect.connect(script_server_host, 443);
+		int res2;
+		if (res1)
+			res2 = LOG(LOG_MSG_SERVER_RECONNECTION);
+		LA_DPRINTF("Connecting to %s, result %d, log result %d\n", script_server_host, res1, res2);
 	}
 }
 
 bool cardExistsInDB(const byte* UID) {
 	// 1 char for "/", 8 chars for uid string, 1 terminating char
-	char path[9] = "";
+	char path[2*uid_len+2] = "";
 	// append uid in characters to the path
-	hex_to_char(UID, 4, path);
-	DPRINTF("Searching for %s\n", path);
+	hex_to_char(UID, uid_len, path);
+	LA_DPRINTF("Searching for %s\n", path);
 	// check if card exists
-	return SPIFFS.exists(path);
+	return LittleFS.exists(path);
 }
 
 //#define REVERSE_DB_SEARCH
@@ -61,7 +65,7 @@ bool cardExistsInDB(const byte* UID) {
 #ifdef REVERSE_DB_SEARCH
 void updateDB() {
 	if (redirect.connected()) {
-		redirect.GET(String(accessScriptURL), script_server_host);
+		redirect.GET(accessScriptURL, script_server_host);
 		String stringUID = redirect.getResponseBody();
 		// check if we got a valid UID string
 		if(stringUID.startsWith(UIDstartSequence) && stringUID.endsWith(UIDstopSequence)) {
@@ -74,7 +78,7 @@ void updateDB() {
 			// TODO: check if removing a file alterates file order, if so restart
 
 			// open directory to iterate over files
-			Dir dir = SPIFFS.openDir("/");
+			Dir dir = LittleFS.openDir("/");
 			while (dir.next()) {
 				// this loop can take some time
 				yield();
@@ -97,7 +101,7 @@ void updateDB() {
 				} while (!(substring.equals(UIDstartSequence) || found));
 				// if the UID has not been found in the string, then remove it
 				if (!found) {
-					SPIFFS.remove(fileName);
+					LittleFS.remove(fileName);
 				}
 			}
 			// --- Now add the new UIDs to the DB
@@ -106,7 +110,7 @@ void updateDB() {
 				// this loop can take some time
 				yield();
 				// create new file and then close it to save, name it with the last UID in the string
-				SPIFFS.open(stringUID.substring(stringUID.length()-8), "w").close();
+				LittleFS.open(stringUID.substring(stringUID.length()-8), "w").close();
 				// remove the UID from the end of the string
 				stringUID.remove(stringUID.length()-8);
 			}
@@ -121,17 +125,15 @@ void updateDB() {
 	// if connection is alive
 	if (redirect.connected()) {
 		// get data form spreadsheet
-		redirect.GET(String(accessScriptURL), script_server_host);
+		redirect.GET(accessScriptURL, script_server_host);
 		String stringUID = redirect.getResponseBody();
-		DPRINTLN("-------- UIDs received ---------");
-		DPRINTLN(stringUID);
+		LA_DPRINTF("-------- UIDs received ---------\n%s\n", stringUID.c_str());
 		stringUID.trim();
 		// check if we got a valid UID string
 		if(stringUID.startsWith(UIDstartSequence) && stringUID.endsWith(UIDstopSequence)) {
-			DPRINTLN("----Received valid UIDs----");
 			// ok, so remove the stop sequence (last 8 chars)
-			stringUID.remove(0,8);
-			DPRINTLN(stringUID);
+			stringUID.remove(0,sizeof(UIDstartSequence)-1);
+			LA_DPRINTF("----Received valid UIDs----\n%s\n",stringUID.c_str());
 			//---------- First remove UIDs not in the string from the DB ----------
 			// TODO: check if removing files while iterating can cause problems
 			// e.g. removing the current file makes a jump to the next
@@ -139,32 +141,37 @@ void updateDB() {
 			// TODO: check if removing a file alterates file order, if so restart
 
 			// open directory to iterate over files
-			Dir dir = SPIFFS.openDir("");
+			Dir dir = LittleFS.openDir("");
 			while (dir.next()) {
 				// this loop can take some time
 				yield();
 				// get the current file name
 				String fileName = dir.fileName();
+				if (fileName == config_filename) {
+					LA_DPRINTF("Skipping config file\n");
+					continue;
+				}
 				String substring;
 				int i = 0;
 				bool found = false;
 				// iterate over the new UID list received
 
 				do {
+					yield();
 					// get the last UID in the string
-					substring = stringUID.substring(i,8);
+					substring = stringUID.substring(i,uid_len*2);
 					// if the card in DB is not present in the new UID list remove it
 					if (substring == fileName) {
 						found = true;
-						stringUID.remove(i,8);
-						DPRINTLN(stringUID);
+						stringUID.remove(i, uid_len*2);
+						LA_DPRINTF("%s\n", stringUID.c_str());
 					}
-					i+=8;
+					i+=(uid_len*2);
 				} while (!(substring.equals(UIDstopSequence) || found));
 				// if the UID has not been found in the string, then remove it
 				if (!found) {
-					SPIFFS.remove(fileName);
-					DPRINTF("Removed %s\n", fileName.c_str());
+					LittleFS.remove(fileName);
+					LA_DPRINTF("Removed %s\n", fileName.c_str());
 				}
 			}
 			// --- Now add the new UIDs to the DB
@@ -173,19 +180,19 @@ void updateDB() {
 				// this loop can take some time
 				yield();
 				// create new file and then close it to save, name it with the last UID in the string
-				String fileName = stringUID.substring(0,8);
-				File newFile = SPIFFS.open(fileName, "w");
+				String fileName = stringUID.substring(0,uid_len*2);
+				File newFile = LittleFS.open(fileName, "w");
 				newFile.close();
-				DPRINTF("Added %s\n", fileName.c_str());
+				LA_DPRINTF("Added %s\n", fileName.c_str());
 				// remove the UID from the end of the string
-				stringUID.remove(0,8);
-				DPRINTLN(stringUID);
+				stringUID.remove(0,uid_len*2);
+				LA_DPRINTF("%s\n", stringUID.c_str());
 			}
 			stringUID.remove(0);
-			DPRINTLN(stringUID);
+			LA_DPRINTF("%s\n", stringUID.c_str());
 
 			LOG(LOG_MSG_DB_UPDATED);
-			DPRINTLN("DB updated");
+			LA_DPRINTF("Update complete.\n");
 		}
 
 	}

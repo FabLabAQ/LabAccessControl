@@ -29,22 +29,31 @@
 #ifndef MIFAREULTRALIGHTAUTH_H
 #define MIFAREULTRALIGHTAUTH_H
 
-#define DEBUG
+#define DEBUG_FLAG "NFC"
+#include "la_debug.h"
 
-#ifdef DEBUG
-#define DBGHEX(str, hex, len) Serial.print(F(str)); printHexArray(hex, len);
-#else
-#define DBGHEX(str, hex, len)
-#endif
+
+#define DBGHEX(str, hex, len) LA_DPRINTF(str "%s\n", hexArray(hex, len).c_str())
 
 class MifareUltralight : public MFRC522 {
   private:
 
     uint8_t key[24];
+	mbedtls_des3_context ctx3;
 
   public:
 
-    MifareUltralight(uint8_t SS, uint8_t RST) : MFRC522(SS, RST) {
+	void dump(auto *d){
+		#ifdef LAB_ACCESS_DEBUG
+		this->PICC_DumpDetailsToSerial(d);
+		#endif
+	}
+
+	MifareUltralight(uint8_t SS, uint8_t RST) : MFRC522(SS, RST) {
+      TrueRandomSetup();
+    }
+
+	MifareUltralight() : MFRC522() {
       TrueRandomSetup();
     }
 
@@ -72,10 +81,12 @@ class MifareUltralight : public MFRC522 {
       }
       else memcpy(key, _key, 16);
       // expand key for 3DES
-      
-    }
+	  char str[33];
+	  hex_to_char(key, 16, str);
+	  LA_DPRINTF("new key: %s\n", str);
+	}
 
-    // TODO: return appropriate codes
+	// TODO: return appropriate codes
 
     StatusCode Authenticate(const uint8_t* _key, bool rotate = false) {
     	SetKey(_key, rotate);
@@ -85,9 +96,8 @@ class MifareUltralight : public MFRC522 {
     StatusCode Authenticate() {
 
       StatusCode result;
-
-      mbedtls_des3_context ctx3;
-	  mbedtls_des3_init( &ctx3 );
+	  const size_t ctx_sz = sizeof(mbedtls_des3_context);
+	  mbedtls_des3_init(&ctx3);
 	  mbedtls_des3_set2key_dec( &ctx3, key );
 	
       DBGHEX("Authenticating with key (16 byte): ",key, 16);

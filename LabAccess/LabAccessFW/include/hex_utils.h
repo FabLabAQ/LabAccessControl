@@ -31,15 +31,15 @@ void hex_to_char(const uint8_t* hex_array, const uint8_t length, char* char_arra
     char_array[i*2] = hex_to_char_array[ hex_array[i]>>4 ];
     char_array[(i*2)+1] = hex_to_char_array[ hex_array[i] & 0x0F ];
   }
-  //char_array[length*2] = 0;
+  char_array[length*2] = 0;
 }
 
-inline char* hex_to_char(const uint8_t* hex_array, const uint8_t length) {
-  char* char_array;
-  char_array = new char[(length*2)+1];
-  hex_to_char(hex_array, length, char_array);
-  return char_array;
-}
+// inline char* hex_to_char(const uint8_t* hex_array, const uint8_t length) {
+//   char* char_array;
+//   char_array = new char[(length*2)+1];
+//   hex_to_char(hex_array, length, char_array);
+//   return char_array;
+// }
 
 static inline uint8_t hex_val(char char_val) {
 	return (char_val>'9' ? char_val-'A'+10 : char_val-'0');

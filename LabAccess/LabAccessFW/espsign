@@ -48,11 +48,14 @@ done
 
 # Create temp signed file
 #SIGNED_FILE_TMP=`mktemp --dry-run`
-SIGNED_FILE_TMP="firmware.bin"
+SIGNED_FILE_TMP="firmware_signed.bin"
 
 # Ahh, this if statement is awful, because signing script's developers decided not to exit with code 1 in case of signing failure idk why :(
 # https://github.com/esp8266/Arduino/blob/master/doc/ota_updates/readme.rst#automatic-signing----only-available-on-linux-and-mac
 # Moreover, signing.py is also puts the "successfull signed" message into stderr
+
+echo "Signing with command: $SIGNING_BIN --mode=sign --bin $OTA_BIN --out $SIGNED_FILE_TMP --privatekey $OTA_PRIVKEY 2>&1 >/dev/null"
+
 SIGN_OUT=$($SIGNING_BIN --mode=sign --bin $OTA_BIN --out $SIGNED_FILE_TMP --privatekey $OTA_PRIVKEY 2>&1 >/dev/null)
 
 if [[ "$SIGN_OUT" != "Signed binary: $SIGNED_FILE_TMP" ]];
@@ -63,5 +66,7 @@ fi
 
 green "[SIGN] Firmware binary successfully signed (^・x・^), calling espota..."
 
+echo "Uploading with command: $UPLOADER_BIN $BYPASS_PARAMS -f $SIGNED_FILE_TMP"
+
 # Call espota.py then remove signed file
-#($UPLOADER_BIN -f $SIGNED_FILE_TMP $BYPASS_PARAMS && rm $SIGNED_FILE_TMP) || (rm $SIGNED_FILE_TMP; exit 1)
+($UPLOADER_BIN $BYPASS_PARAMS -f $SIGNED_FILE_TMP) || (exit 1)

@@ -25,8 +25,8 @@
 #include "MifareUltralight.h"
 
 #if defined(ESP8266)
-#define SS_PIN 4
-#define RST_PIN 5
+#define SS_PIN 15
+#define RST_PIN 255
 #define LED_PIN 2
 #define LED_ON 0
 #else
@@ -36,6 +36,8 @@
 #define LED_OFF !LED_ON
 
 MifareUltralight Ultralight(SS_PIN, RST_PIN);  // Create MFRC522 instance
+
+// 425245414b4d454946594f5543414e21
 
 const uint8_t n_keys = 3;
 const uint8_t defaultKeys[n_keys][16] = {
@@ -58,7 +60,7 @@ void setup() {
 	
 }
 
-void wait_for_new_card(MFRC522::Uid old_uid) {
+void wait_for_new_card(MifareUltralight::Uid old_uid) {
 	while(strncmp((char*)Ultralight.uid.uidByte, (char*)old_uid.uidByte, 7) == 0) {
 		if(Ultralight.PICC_IsNewCardPresent()) {
 			Ultralight.PICC_ReadCardSerial();

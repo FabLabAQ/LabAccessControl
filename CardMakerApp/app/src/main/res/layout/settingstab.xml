@@ -1,37 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/settingstab"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingstab"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/scriptIdButton"
+        android:layout_width="96dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/set"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scriptIdTextInput" />
+
+    <Button
+        android:id="@+id/genSignKeyButton"
+        android:layout_width="96dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="36dp"
+        android:text="@string/generate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
     <EditText
-        android:id="@+id/masterKeyTextInput"
+        android:id="@+id/desKeyTextInput"
         android:layout_width="216dp"
         android:layout_height="48dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
+        android:importantForAutofill="no"
         android:inputType="textPassword"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/setMasterKeyButton"
+        app:layout_constraintEnd_toStartOf="@+id/desKeyButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+    <EditText
+        android:id="@+id/scriptIdTextInput"
+        android:layout_width="353dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:importantForAutofill="no"
+        android:inputType="textVisiblePassword|textMultiLine"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
     <Button
-        android:id="@+id/setMasterKeyButton"
+        android:id="@+id/desKeyButton"
         android:layout_width="96dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="32dp"
         android:text="@string/set"
-        app:layout_constraintBaseline_toBaselineOf="@+id/masterKeyTextInput"
+        app:layout_constraintBaseline_toBaselineOf="@+id/desKeyTextInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/masterKeyTextInput" />
+        app:layout_constraintStart_toEndOf="@+id/desKeyTextInput" />
 
     <TextView
         android:id="@+id/textView"
@@ -40,11 +76,76 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="104dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/master_key"
+        android:text="@string/des_key"
         android:textAppearance="@style/TextAppearance.AppCompat.Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/sign_key"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/desKeyTextInput" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/script_id"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/genSignKeyButton" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/admin_id"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        app:layout_constraintBottom_toTopOf="@+id/adminIdEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scriptIdButton"
+        app:layout_constraintVertical_bias="0.638" />
+
+    <EditText
+        android:id="@+id/adminIdEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <CheckBox
+        android:id="@+id/dryRunCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Dry run"
+        app:layout_constraintStart_toStartOf="@+id/desKeyButton"
+        app:layout_constraintTop_toBottomOf="@+id/desKeyButton" />
 
     <!--<Switch
         android:id="@+id/restoreSwitch"

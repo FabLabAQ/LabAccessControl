@@ -2,6 +2,8 @@
 #define CONFIG_H
 
 #include <ArduinoJson.h>
+#include <StreamUtils.h>
+
 #include "hex_utils.h"
 #define DEBUG_FLAG "CFG"
 #include "la_debug.h"
@@ -9,6 +11,49 @@
 #define LOCAL_OTA
 #define REMOTE_OTA
 #define MANUAL_SIGNING
+
+
+bool readConfigFile(JsonDocument &json){
+	File configFile;
+	configFile = LittleFS.open(config_filename, "r");
+	if (!configFile)
+	{
+		LA_DPRINTF("Error opening config file for reading\n");
+		configFile.close();
+		return false;
+	}
+	LA_DPRINTF("Opened config file for reading\n");
+	ReadBufferingStream readBufStream(configFile, 64);
+	DeserializationError desErr = deserializeJson(json, readBufStream);
+	configFile.close();
+	if (desErr)
+	{
+		LA_DPRINTF("Deserialization error: %s\n", desErr.f_str());
+		return false;
+	}
+	LA_DPRINTF("Config file deserialized\n");
+	LA_DJSON(json);
+	return true;
+}
+
+bool writeConfigFile(JsonDocument &json){
+	File configFile;
+	configFile = LittleFS.open(config_filename, "w");
+	if (!configFile)
+	{
+		LA_DPRINTF("Error opening config file for writing\n");
+		configFile.close();
+		return false;
+	}
+	LA_DPRINTF("Opened config file for writing\n");
+	WriteBufferingStream writeBufStream(configFile, 64);
+	size_t bw = serializeJson(json, writeBufStream);
+	configFile.flush();
+	configFile.close();
+	LA_DJSON(json);
+	LA_DPRINTF("%lu bytes written\n", bw);
+	return true;
+}
 
 struct pin_config_t
 {
@@ -64,4 +109,5 @@ void init_config(JsonDocument &json)
 	ota_key = json["ota_key"].as<const char*>();
 }
 
+#undef DEBUG_FLAG
 #endif

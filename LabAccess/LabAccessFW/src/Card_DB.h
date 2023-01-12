@@ -36,8 +36,8 @@
 #include "la_debug.h"
 
 // start and stop sequences with the same 8 char length as UIDs
-PGM_STR UIDstartSequence[] = "UIDSTART";
-PGM_STR UIDstopSequence[] =  "UID_STOP";
+PGM_STR UIDstartSequence = "UIDSTART";
+PGM_STR UIDstopSequence =  "UID_STOP";
 
 void reconnect() {
 	if (!redirect.connected()) {

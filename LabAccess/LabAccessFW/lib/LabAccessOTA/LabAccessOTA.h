@@ -230,9 +230,9 @@ void handleOTA()
 			LA_DPRINTF("Checking for updates: return code %d\n", code);
 			if (code > 0)
 			{
-				StaticJsonDocument<50> filter;
+				StaticJsonDocument<16> filter;
 				filter["tag_name"] = true;
-				StaticJsonDocument<100> resp;
+				StaticJsonDocument<64> resp;
 				deserializeJson(resp, ota_http_client.getStream(), DeserializationOption::Filter(filter));
 				LA_DJSON(resp);
 				union version_t l = {.u32 = str_to_version(resp["tag_name"])};
@@ -268,81 +268,5 @@ void handleOTA()
 #endif
 }
 
+#undef DEBUG_FLAG
 #endif // LAB_ACCESS_OTA_H
-
-// const unsigned int maxBufferSize = 300;
-// char answerBuffer[maxBufferSize + 1];
-
-// boolean buildAnswerBuffer(WiFiClientSecure &client, const char * marker, unsigned long duration)
-// {
-//   int localBufferSize = strlen(marker); // we won't need an \0 at the end
-//   char localBuffer[localBufferSize];
-//   int index = 0, pos = 0;
-//   boolean markerFound = false;
-//   unsigned long currentTime;
-
-//   memset(localBuffer, '\0', localBufferSize); // clear buffer
-
-//   currentTime = millis();
-//   while ((millis() - currentTime <= duration) && client.connected()) {
-//     if (client.available() > 0) {
-//       if (index == localBufferSize) index = 0;
-//       localBuffer[index] = (uint8_t) client.read();
-
-//       answerBuffer[pos++] = localBuffer[index];
-//       answerBuffer[pos] = '\0';
-//       if (pos >= maxBufferSize) pos = maxBufferSize - 1; // will loose the end
-//       markerFound = true;
-//       for (int i = 0; i < localBufferSize; i++) {
-//         if (localBuffer[(index + 1 + i) % localBufferSize] != marker[i]) {
-//           markerFound = false;
-//           break;
-//         }
-//       }
-//       index++;
-//     }
-//     if (markerFound) break;
-//   }
-//   return markerFound;
-// }
-
-// boolean fetchPart(const char * magicMarker, const char * endMarker )
-// {
-//   // Use WiFiClientSecure class to create TLS connection
-//   WiFiClientSecure client;
-
-//   boolean success = false;
-
-//   Serial.print("connecting to ");
-//   Serial.println(host);
-
-//   if (!client.connect(host, httpsPort)) {
-//     Serial.println("connection failed");
-//     return false;
-//   }
-
-//   if (client.verify(sha1, host)) {
-//     Serial.println("Sha1 fingerprint OK");
-//   } else {
-//     Serial.println("certificate error");
-//     return false;
-//   }
-
-//   client.print("GET ");
-//   client.print(urlCommand);
-//   client.print(" HTTP/1.1\r\nHost: ");
-//   client.print(host);
-//   client.print("\r\nUser - Agent: ESP8266\r\nConnection: close\r\n\r\n");
-
-//   if (buildAnswerBuffer(client, magicMarker, 10000ul)) {
-//     // we found the start marker
-//     if (buildAnswerBuffer(client, endMarker, 10000ul)) {
-//       Serial.print("\n\nFound ");
-//       Serial.println(magicMarker);
-//       Serial.println(answerBuffer);
-//       success = true;
-//     }
-//   }
-//   client.stop();
-//   return success;
-// }

@@ -48,7 +48,7 @@ static String getParam(String name)
 static void configCallback()
 {
 
-	StaticJsonDocument<512> jsonConfig;
+	DynamicJsonDocument jsonConfig(1024);
 	File tmpFile = LittleFS.open(config_filename, "r");
 	deserializeJson(jsonConfig, tmpFile);
 	tmpFile.close();
@@ -83,6 +83,7 @@ static void configCallback()
 		}
 		else
 		{
+			// TODO: remove duplicate code
 			if (param != "")
 			{
 				if (key == "mode")
@@ -212,7 +213,7 @@ void setupWiFi()
 				LA_DPRINTF("Opened config file\n");
 				// size_t size = configFile.size();
 				// std::unique_ptr<char[]> buf(new char[size]);
-				StaticJsonDocument<512> jsonConfig;
+				DynamicJsonDocument jsonConfig(1024);
 				// configFile.readBytes(buf.get(), size);
 				DeserializationError deserializeError = deserializeJson(jsonConfig, configFile);
 				configFile.close();
@@ -258,4 +259,5 @@ void setupWiFi()
 	wait_config();
 }
 
+#undef DEBUG_FLAG
 #endif // LAB_ACCESS_WIFI_H

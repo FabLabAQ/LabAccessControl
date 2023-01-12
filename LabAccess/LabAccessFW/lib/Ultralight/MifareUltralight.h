@@ -22,9 +22,9 @@
 #include "Arduino.h"
 #include <MFRC522.h>
 #include "TrueRandom.h"
-//#include "DES.h"
 #include "HexPrint.h"
 #include "mbed_des.h"
+//#include <DES.h>
 
 #ifndef MIFAREULTRALIGHTAUTH_H
 #define MIFAREULTRALIGHTAUTH_H
@@ -165,4 +165,5 @@ class MifareUltralight : public MFRC522 {
 
 };
 
+#undef DEBUG_FLAG
 #endif //MIFAREULTRALIGHTAUTH_H

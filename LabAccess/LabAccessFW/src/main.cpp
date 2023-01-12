@@ -88,7 +88,13 @@ void setup()
 #ifdef LAB_ACCESS_DEBUG
 	RFID.PCD_DumpVersionToSerial();
 #endif
-	configTime(TZ_SEC, DST_SEC, NTP_server_address);
+	LA_DPRINTF("Waiting for time sync\n");
+	time_t now = 0;
+	while ((now = time(NULL)) < COMPILE_TIME) {
+		delay(1000);
+		configTime(TZ_SEC, DST_SEC, NTP_server_address);
+	}
+	LA_DPRINTF("Time updated: %s\n", ctime(&now));
 	LOG(LOG_MSG_BOARD_BOOT);
 	LA_DPRINTF("Setup completed\n");
 }
@@ -251,3 +257,5 @@ void loop()
 		ESP.restart();
 	}
 }
+
+#undef DEBUG_FLAG

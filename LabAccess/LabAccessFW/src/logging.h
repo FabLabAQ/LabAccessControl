@@ -147,4 +147,5 @@ int LOG(const char* text, const byte* UID) {
 	else return LOG();
 }
 
+#undef DEBUG_FLAG
 #endif /* LOGGING_H_ */

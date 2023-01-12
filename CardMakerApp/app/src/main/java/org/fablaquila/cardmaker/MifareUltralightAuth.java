@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -116,12 +117,13 @@ public class MifareUltralightAuth {
         return AuthRetCode.AUTHENTICATED;
     }
 
-    private static SecureRandom rnd = new SecureRandom();
+    private static final SecureRandom rnd = new SecureRandom();
     private static void generateRandom(byte[] rndA) {
         rnd.nextBytes(rndA);
     }
 
     private static byte[] desEncrypt(byte[] key, byte[] data) throws RuntimeException {
+
         return performDes(Cipher.ENCRYPT_MODE, key, data);
     }
     private static byte[] desDecrypt(byte[] key, byte[] data) throws RuntimeException {
@@ -132,18 +134,25 @@ public class MifareUltralightAuth {
 
     private static byte[] performDes(int opMode, byte[] key, byte[] data) throws RuntimeException {
         try {
+
+
+//            KeyStore keyStore = KeyStore.getInstance(SettingsTab.ANDROID_KEYSTORE);
+//            keyStore.load(null);
+//            SecretKey desKey =  (SecretKey) keyStore.getKey(SettingsTab.desKeyAlias, null);
+
             Cipher des = Cipher.getInstance("DESede/CBC/NoPadding");
             SecretKeyFactory desKeyFactory = SecretKeyFactory.getInstance("DESede");
             Key desKey = desKeyFactory.generateSecret(new DESedeKeySpec(ArrayUtils.addAll(key, Arrays.copyOf(key, 8))));
             des.init(opMode, desKey, new IvParameterSpec(iv));
             byte[] ret = des.doFinal(data);
+
             if(opMode==Cipher.ENCRYPT_MODE) {
                 iv=Arrays.copyOfRange(ret, ret.length-8, ret.length);
             } else {
                 iv=Arrays.copyOfRange(data, data.length-8, data.length);
             }
             return ret;
-        } catch (NoSuchPaddingException | InvalidKeySpecException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -175,8 +184,8 @@ public class MifareUltralightAuth {
                 card.writePage(0x2C + i, page);
             }
             // restrict write access
-            card.writePage(0x2A, new byte[] {0x03, 0x00, 0x00, 0x00});
-            card.writePage(0x2B, new byte[] {0x00, 0x00, 0x00, 0x00});
+            //card.writePage(0x2A, new byte[] {0x03, 0x00, 0x00, 0x00});
+            //card.writePage(0x2B, new byte[] {0x00, 0x00, 0x00, 0x00});
             return true;
         }
         catch (IOException e) {
@@ -198,10 +207,10 @@ public class MifareUltralightAuth {
         }
     }
 
-    public static byte[] generateKey(byte[] id, SecretKey masterKey) {
+    public static byte[] generateKey(byte[] id, SecretKey genKey) {
         try {
             Mac mac = Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA256);
-            mac.init(masterKey);
+            mac.init(genKey);
             return mac.doFinal(id);
         }
         catch (NoSuchAlgorithmException | InvalidKeyException e) {

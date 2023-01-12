@@ -36,9 +36,9 @@
 #define DEBUG_ESP_PORT Serial
 #endif
 
-#define STARTUP_STRING "\n------------------ LAB ACCESS DEBUG ------------------\n"\
-	"Starting version " LAB_ACCESS_VERSION \
-	"\nCompiled on " __DATE__ " " __TIME__ "\n"
+#define STARTUP_STRING "\n------------------ LAB ACCESS DEBUG ------------------\n" \
+					   "Starting version " LAB_ACCESS_VERSION                       \
+					   "\nCompiled on " __DATE__ " " __TIME__ "\n"
 
 #define LA_DPRINTF(fmt, ...) \
 	Serial.printf_P("[" DEBUG_FLAG "] " fmt, ##__VA_ARGS__)
@@ -49,9 +49,16 @@
 		yield();                         \
 	Serial.printf_P(STARTUP_STRING);
 
-#define LA_DJSON(j) \
+#define LA_DJSON(j)                       \
 	Serial.print(F("[" DEBUG_FLAG "] ")); \
 	serializeJsonPretty(j, Serial);
+
+#define LA_DPRINTHEX(str, hex)                    \
+	{                                        \
+		char tmp[2 * sizeof(hex) + 1];       \
+		hex_to_char(hex, sizeof(hex), tmp);  \
+		Serial.printf_P("[" DEBUG_FLAG "] " str ": %s\n", tmp); \
+	}
 
 #warning "Debugging enabled!"
 
@@ -59,4 +66,5 @@
 #define DPRINTF(FMT, ...) // empty
 #define DSTART(s)
 #define LA_DJSON(j)
+#define LA_DPRINTHEX(hex)
 #endif

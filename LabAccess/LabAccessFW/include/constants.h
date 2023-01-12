@@ -26,7 +26,7 @@
 #include "Arduino.h"
 #include "HTTPSRedirect.h"
 
-#define PGM_STR const char //PROGMEM //__attribute__((aligned(4)))
+#define PGM_STR const char * //PROGMEM //__attribute__((aligned(4)))
 
 #define PIN_INTERRUPT 4
 #define PIN_EXTSW 5
@@ -42,35 +42,15 @@ const int setsw_deb_time = 1000;
 const int setsw_deb_time = 10000;
 #endif
 
-PGM_STR LOG_MSG_BOARD_BOOT[] = "Board booted successfully";
-PGM_STR LOG_MSG_SERVER_RECONNECTION[] = "Server reconnected";
-PGM_STR LOG_MSG_AUTH_SUCCESS[] = "Authentication successful";
-PGM_STR LOG_MSG_AUTH_ERROR[] = "Authentication ERROR";
-PGM_STR LOG_MSG_CLOSED_DOOR[] = "Door closed";
-PGM_STR LOG_MSG_PRESSED_SWITCH[] = "Machine turned OFF";
-PGM_STR LOG_MSG_OPEN_DOOR_AUTH[] = "Door opened with authentication";
-PGM_STR LOG_MSG_OPEN_DOOR_NOAUTH[] = "Door opened WITHOUT authentication";
-PGM_STR LOG_MSG_DB_UPDATED[] = "Card database updated";
-
-//#define LOG_MSG_BOARD_BOOT F("Board booted successfully")
-//#define LOG_MSG_SERVER_RECONNECTION F("Server reconnected")
-//#define LOG_MSG_AUTH_SUCCESS F("Authentication successful")
-//#define LOG_MSG_AUTH_ERROR F("Authentication ERROR")
-//#define LOG_MSG_CLOSED_DOOR F("Door closed")
-//#define LOG_MSG_PRESSED_SWITCH F("Machine turned OFF")
-//#define LOG_MSG_OPEN_DOOR_AUTH F("Door opened with authentication")
-//#define LOG_MSG_OPEN_DOOR_NOAUTH F("Door opened WITHOUT authentication")
-//#define LOG_MSG_DB_UPDATED F("Card database updated")
-
-//#define LOG_MSG_BOARD_BOOT "Board booted successfully"
-//#define LOG_MSG_SERVER_RECONNECTION "Server reconnected"
-//#define LOG_MSG_AUTH_SUCCESS "Authentication successful"
-//#define LOG_MSG_AUTH_ERROR "Authentication ERROR"
-//#define LOG_MSG_CLOSED_DOOR "Door closed"
-//#define LOG_MSG_PRESSED_SWITCH "Machine turned OFF"
-//#define LOG_MSG_OPEN_DOOR_AUTH "Door opened with authentication"
-//#define LOG_MSG_OPEN_DOOR_NOAUTH "Door opened WITHOUT authentication"
-//#define LOG_MSG_DB_UPDATED "Card database updated"
+PGM_STR LOG_MSG_BOARD_BOOT = "Board booted successfully";
+PGM_STR LOG_MSG_SERVER_RECONNECTION = "Server reconnected";
+PGM_STR LOG_MSG_AUTH_SUCCESS = "Authentication successful";
+PGM_STR LOG_MSG_AUTH_ERROR = "Authentication ERROR";
+PGM_STR LOG_MSG_CLOSED_DOOR = "Door closed";
+PGM_STR LOG_MSG_PRESSED_SWITCH = "Machine turned OFF";
+PGM_STR LOG_MSG_OPEN_DOOR_AUTH = "Door opened with authentication";
+PGM_STR LOG_MSG_OPEN_DOOR_NOAUTH = "Door opened WITHOUT authentication";
+PGM_STR LOG_MSG_DB_UPDATED = "Card database updated";
 
 const uint32_t minimum_free_heap = 4000;
 const unsigned long updateInterval = 90000, cardCheckDelay = 500;
@@ -80,7 +60,13 @@ const char script_server_host[] = "script.google.com";
 //PGM_STR logScriptURL[] = "/macros/s/" SECRET_LOG_SCRIPT_ID "/exec?log";
 //PGM_STR accessScriptURL[] = "/macros/s/" SECRET_ACCESS_SCRIPT_ID "/exec?boardName=" BOARD_NAME;
 
+// script API commands
+PGM_STR api_key_prov = "keyProv";
+PGM_STR api_key_rec = "keyRec";
+
+
 static const char* config_filename = "config.json";
+const uint16_t config_size = 1024;
 
 const char NTP_server_address[] = "pool.ntp.org";
 #define TZ              1       // (utc+) TZ in hours
